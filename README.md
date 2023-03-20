@@ -6,7 +6,7 @@ image picker for android developer
 
 添加以下3个依赖包到项目中
 
-Add below dependencies to project build.gradle(Module:app)
+(Add below dependencies to project build.gradle(Module:app))
 
 implementation 'com.github.bumptech.glide:glide:4.13.0'
 

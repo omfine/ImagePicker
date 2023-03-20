@@ -4,6 +4,18 @@ image picker for android developer
 
 使用方法(How to use)
 
+添加以下3个依赖包到项目中
+
+Add below dependencies to project build.gradle(Module:app)
+
+implementation 'com.github.bumptech.glide:glide:4.13.0'
+
+implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
+implementation 'com.github.omfine:imagePicker:v1.0.0'
+
+
+
 1,打开相册(选择图片)
 
 (Open album to choose pictures)

@@ -54,6 +54,7 @@ import com.omfine.image.picker.utils.UriUtils;
 import com.omfine.image.picker.utils.VersionUtils;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -258,7 +259,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                confirm();
+                confirm(null);
             }
         });
 
@@ -481,16 +482,36 @@ public class ImageSelectorActivity extends AppCompatActivity {
         return mLayoutManager.findFirstVisibleItemPosition();
     }
 
-    private void confirm() {
+    private void confirm(Intent data) {
         if (mAdapter == null) {
             return;
         }
-        //因为图片的实体类是Image，而我们返回的是String数组，所以要进行转换。
-        ArrayList<Image> selectImages = mAdapter.getSelectImages();
         ArrayList<String> images = new ArrayList<>();
-        for (Image image : selectImages) {
-            images.add(image.getPath());
+
+        if (null == data){
+            //因为图片的实体类是Image，而我们返回的是String数组，所以要进行转换。
+            ArrayList<Image> selectImages = mAdapter.getSelectImages();
+            for (Image image : selectImages) {
+                images.add(image.getPath());
+            }
+        }else {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU){
+                ArrayList<Image> selectImages = data.getParcelableArrayListExtra("selectImages" , Image.class);
+                if (null != selectImages){
+                    for (Image image : selectImages) {
+                        images.add(image.getPath());
+                    }
+                }
+            }else {
+                ArrayList<Image> selectImages = data.getParcelableExtra("selectImages");
+                if (null != selectImages){
+                    for (Image image : selectImages) {
+                        images.add(image.getPath());
+                    }
+                }
+            }
         }
+
         saveImageAndFinish(images, false);
     }
 
@@ -541,9 +562,29 @@ public class ImageSelectorActivity extends AppCompatActivity {
         if (requestCode == ImageSelector.RESULT_CODE) {
             if (data != null && data.getBooleanExtra(ImageSelector.IS_CONFIRM, false)) {
                 //如果用户在预览页点击了确定，就直接把用户选中的图片返回给用户。
-                confirm();
+                confirm(data);
             } else {
                 //否则，就刷新当前页面。
+                ArrayList<String> images = new ArrayList<>();
+                if (null != data){
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU){
+                        ArrayList<Image> selectImages = data.getParcelableArrayListExtra("selectImages" , Image.class);
+                        if (null != selectImages){
+                            for (Image image : selectImages) {
+                                images.add(image.getPath());
+                            }
+                        }
+                    }else {
+                        ArrayList<Image> selectImages = data.getParcelableExtra("selectImages");
+                        if (null != selectImages){
+                            for (Image image : selectImages) {
+                                images.add(image.getPath());
+                            }
+                        }
+                    }
+                }
+                mAdapter.getSelectImages().clear();
+                mAdapter.setSelectedImages(images);
                 mAdapter.notifyDataSetChanged();
                 setSelectImageCount(mAdapter.getSelectImages().size());
             }

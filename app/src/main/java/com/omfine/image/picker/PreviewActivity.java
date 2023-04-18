@@ -358,6 +358,9 @@ public class PreviewActivity extends AppCompatActivity {
     public void finish() {
         //Activity关闭时，通过Intent把用户的操作(确定/返回)传给ImageSelectActivity。
         Intent intent = new Intent();
+//        intent.putParcelableArrayListExtra("images" , mImages);
+        intent.putParcelableArrayListExtra("selectImages" , mSelectImages);
+
         intent.putExtra(ImageSelector.IS_CONFIRM, isConfirm);
         setResult(ImageSelector.RESULT_CODE, intent);
         super.finish();

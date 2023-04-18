@@ -46,11 +46,11 @@ public class PreviewActivity extends AppCompatActivity {
     //tempImages和tempSelectImages用于图片列表数据的页面传输。
     //之所以不要Intent传输这两个图片列表，因为要保证两位页面操作的是同一个列表数据，同时可以避免数据量大时，
     // 用Intent传输发生的错误问题。
-    private static ArrayList<Image> tempImages;
-    private static ArrayList<Image> tempSelectImages;
+//    private static ArrayList<Image> tempImages;
+//    private static ArrayList<Image> tempSelectImages;
 
-    private ArrayList<Image> mImages;
-    private ArrayList<Image> mSelectImages;
+    private ArrayList<Image> mImages = new ArrayList<>();
+    private ArrayList<Image> mSelectImages = new ArrayList<>();
     private boolean isShowBar = true;
     private boolean isConfirm = false;
     private boolean isSingle;
@@ -62,12 +62,16 @@ public class PreviewActivity extends AppCompatActivity {
     public static void openActivity(Activity activity, ArrayList<Image> images,
                                     ArrayList<Image> selectImages, boolean isSingle,
                                     int maxSelectCount, int position) {
-        tempImages = images;
-        tempSelectImages = selectImages;
+//        tempImages = images;
+//        tempSelectImages = selectImages;
         Intent intent = new Intent(activity, PreviewActivity.class);
         intent.putExtra(ImageSelector.MAX_SELECT_COUNT, maxSelectCount);
         intent.putExtra(ImageSelector.IS_SINGLE, isSingle);
         intent.putExtra(ImageSelector.POSITION, position);
+
+        intent.putParcelableArrayListExtra("images" , images);
+        intent.putParcelableArrayListExtra("selectImages" , selectImages);
+
         activity.startActivityForResult(intent, ImageSelector.RESULT_CODE);
     }
 
@@ -85,12 +89,41 @@ public class PreviewActivity extends AppCompatActivity {
         }
 
         setStatusBarVisible(true);
-        mImages = tempImages;
-        tempImages = null;
-        mSelectImages = tempSelectImages;
-        tempSelectImages = null;
+//        mImages = tempImages;
+//        tempImages = null;
+//        mSelectImages = tempSelectImages;
+//        tempSelectImages = null;
 
         Intent intent = getIntent();
+
+        mImages.clear();
+        mSelectImages.clear();
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            ArrayList<Image> images = intent.getParcelableArrayListExtra("images" , Image.class);
+            ArrayList<Image> selectImages = intent.getParcelableArrayListExtra("selectImages" , Image.class);
+            if (null != images){
+                mImages.addAll(images);
+            }
+            if (null != selectImages){
+                mSelectImages.addAll(selectImages);
+            }
+        }else {
+            ArrayList<Image> images = intent.getParcelableExtra("images");
+            ArrayList<Image> selectImages = intent.getParcelableExtra("selectImages");
+            if (null != images){
+                mImages.addAll(images);
+            }
+            if (null != selectImages){
+                mSelectImages.addAll(selectImages);
+            }
+        }
+
+        if (mImages.isEmpty()){
+            finish();
+            return;
+        }
+
         mMaxCount = intent.getIntExtra(ImageSelector.MAX_SELECT_COUNT, 0);
         isSingle = intent.getBooleanExtra(ImageSelector.IS_SINGLE, false);
 

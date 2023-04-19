@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.Nullable;
+
 /**
  *图片实体类
  */
@@ -67,6 +69,25 @@ public class Image implements Parcelable {
         return "image/gif".equals(mimeType);
     }
 
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (null == obj){
+            return false;
+        }
+        if (obj instanceof Image){
+            Image oImage = (Image) obj;
+            String oPath = oImage.getPath();
+            if (null == oPath || oPath.isEmpty()){
+                return false;
+            }
+            String path = getPath();
+            if (null == path || path.isEmpty()){
+                return false;
+            }
+            return oPath.equals(path);
+        }
+        return false;
+    }
 
     @Override
     public int describeContents() {

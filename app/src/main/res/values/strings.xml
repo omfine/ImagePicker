@@ -15,5 +15,11 @@
     <string name="selector_cancel">取消</string>
     <string name="selector_hint">提示</string>
     <string name="selector_permissions_hint">该相册需要赋予访问存储和拍照的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
-	
+
+    <string name="selector_permissions_denied_hint_for_album">该功能需要赋予访问相册的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
+    <string name="selector_permissions_denied_hint_for_camera">该功能需要赋予访问相机的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
+
+    <string name="selector_permission_request_tip_album">访问相册需要相关权限,请允许打开相关权限</string>
+    <string name="selector_permission_request_tip_camera">访问相机需要相关权限,请允许打开相关权限</string>
+
 </resources>

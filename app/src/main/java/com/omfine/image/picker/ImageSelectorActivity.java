@@ -52,6 +52,8 @@ import com.omfine.image.picker.utils.ImageSelector;
 import com.omfine.image.picker.utils.ImageUtil;
 import com.omfine.image.picker.utils.UriUtils;
 import com.omfine.image.picker.utils.VersionUtils;
+import com.omfine.image.picker.view.OnDialogBtnClickListener;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -122,6 +124,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
                 //当 shouldShowRequestPermissionRationale == false时，需要弹出窗口，提示用户
                 // 告诉用户为啥要申请这个权限
                 if (shouldShowRequestPermissionRationale){
+                    finish();
                     return;
                 }
                 showExceptionDialog(true);
@@ -143,6 +146,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
                 //当 shouldShowRequestPermissionRationale == false时，需要弹出窗口，提示用户
                 // 告诉用户为啥要申请这个权限
                 if (shouldShowRequestPermissionRationale){
+                    finish();
                     return;
                 }
                 showExceptionDialog(false);
@@ -203,14 +207,16 @@ public class ImageSelectorActivity extends AppCompatActivity {
         onlyTakePhoto = config.onlyTakePhoto;
         if (onlyTakePhoto) {
             // 仅拍照
-            checkPermissionAndCamera();
+//            checkPermissionAndCamera();
+            startOpenCamera();
         } else {
             setContentView(R.layout.activity_image_select);
             setStatusBarColor();
             initView();
             initListener();
             initImageList();
-            checkPermissionAndLoadImages();
+//            checkPermissionAndLoadImages();
+            startOpenAlbum();
             hideFolderList();
             setSelectImageCount(0);
         }
@@ -631,6 +637,74 @@ public class ImageSelectorActivity extends AppCompatActivity {
     }
 
     /**
+     * 打开相册。
+     */
+    private void startOpenAlbum(){
+        if (hasAlbumNeededPermission()){
+            loadImageForSDCard();
+            return;
+        }
+        showPermissionTipDialogBeforeRequest(true , new OnDialogBtnClickListener(){
+            @Override
+            public void onSure() {
+                //请求权限
+                checkPermissionAndLoadImages();
+            }
+        });
+    }
+
+    /**
+     * 打开相机。
+     */
+    private void startOpenCamera(){
+        if (hasCameraNeededPermission()){
+            openCamera();
+            return;
+        }
+        showPermissionTipDialogBeforeRequest(false , new OnDialogBtnClickListener(){
+            @Override
+            public void onSure() {
+                //请求权限
+                checkPermissionAndCamera();
+            }
+        });
+    }
+
+
+    /**
+     * 相册需要的权限
+     * @return
+     */
+    public boolean hasAlbumNeededPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            return true;
+        }
+        //如果手机系统是android 13 并且 APP的 targetSdk 也是 android 13 或之上版本，使用新的图片权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.TIRAMISU){
+            return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this , Manifest.permission.READ_MEDIA_IMAGES);
+        }
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this , Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    /**
+     * 相机需要的权限
+     * @return
+     */
+    public boolean hasCameraNeededPermission(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            return true;
+        }
+        //如果手机系统是android 13 并且 APP的 targetSdk 也是 android 13 或之上版本，使用新的图片权限
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.TIRAMISU){
+            //没有权限，申请权限。
+            return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this , Manifest.permission.CAMERA);
+        }
+        return PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this , Manifest.permission.CAMERA)
+                && PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this , Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+
+    /**
      * 检查权限并加载SD卡里的图片。
      */
     private void checkPermissionAndLoadImages() {
@@ -714,6 +788,38 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * 在请求权限前，先弹出对话窗口提示用户为什么需要请求相关权限。
+     */
+    private void showPermissionTipDialogBeforeRequest(Boolean album ,OnDialogBtnClickListener onDialogBtnClickListener){
+        new AlertDialog.Builder(this)
+                .setCancelable(false)
+                .setTitle(R.string.selector_hint)
+                .setMessage(album ? R.string.selector_permission_request_tip_album : R.string.selector_permission_request_tip_camera)
+                .setNegativeButton(R.string.selector_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        finish();
+                        if (null != onDialogBtnClickListener){
+                            onDialogBtnClickListener.onCancel();
+                        }
+                    }
+                }).setPositiveButton(R.string.selector_confirm, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        //确定，去请求权限
+                        if (null != onDialogBtnClickListener){
+                            onDialogBtnClickListener.onSure();
+                        }
+
+                    }
+                }).show();
+    }
+
+
     /**
      * 发生没有权限等异常时，显示一个提示dialog.
      */
@@ -721,7 +827,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle(R.string.selector_hint)
-                .setMessage(R.string.selector_permissions_hint)
+                .setMessage(onlyTakePhoto ? R.string.selector_permissions_denied_hint_for_camera : R.string.selector_permissions_denied_hint_for_album)
                 .setNegativeButton(R.string.selector_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

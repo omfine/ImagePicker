@@ -571,21 +571,17 @@ public class ImageSelectorActivity extends AppCompatActivity {
                 confirm(data);
             } else {
                 //否则，就刷新当前页面。
-                ArrayList<String> images = new ArrayList<>();
+                ArrayList<Image> images = new ArrayList<>();
                 if (null != data){
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU){
                         ArrayList<Image> selectImages = data.getParcelableArrayListExtra("selectImages" , Image.class);
                         if (null != selectImages){
-                            for (Image image : selectImages) {
-                                images.add(image.getPath());
-                            }
+                            images.addAll(selectImages);
                         }
                     }else {
                         ArrayList<Image> selectImages = data.getParcelableExtra("selectImages");
                         if (null != selectImages){
-                            for (Image image : selectImages) {
-                                images.add(image.getPath());
-                            }
+                            images.addAll(selectImages);
                         }
                     }
                 }
@@ -864,7 +860,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
                             mFolders.get(0).setUseCamera(useCamera);
                             setFolder(mFolders.get(0));
                             if (mSelectedImages != null && mAdapter != null) {
-                                mAdapter.setSelectedImages(mSelectedImages);
+//                                mAdapter.setSelectedImages(mSelectedImages);
                                 mSelectedImages = null;
                                 setSelectImageCount(mAdapter.getSelectImages().size());
                             }

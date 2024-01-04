@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <com.omfine.image.picker.view.MyViewPager
-        android:id="@+id/vp_image"
+        android:id="@+id/myImagePickerViewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#272828" />

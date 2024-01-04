@@ -215,7 +215,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
         }
     }
 
-    public void setSelectedImages(ArrayList<String> selected) {
+/*    public void setSelectedImages(ArrayList<String> selected) {
         if (mImages != null && selected != null) {
             for (String path : selected) {
                 if (isFull()) {
@@ -232,6 +232,18 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
             }
             notifyDataSetChanged();
         }
+    }*/
+
+    public void setSelectedImages(ArrayList<Image> newSelectedImages) {
+        if (null == mImages){
+            return;
+        }
+        if (null == newSelectedImages){
+            return;
+        }
+        mSelectImages.clear();
+        mSelectImages.addAll(newSelectedImages);
+        notifyDataSetChanged();
     }
 
 

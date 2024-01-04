@@ -22,20 +22,19 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.omfine.image.picker.adapter.ImagePagerAdapter;
 import com.omfine.image.picker.entry.Image;
 import com.omfine.image.picker.utils.ImageSelector;
 import com.omfine.image.picker.utils.VersionUtils;
 import com.omfine.image.picker.view.MyViewPager;
-
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.animation.ObjectAnimator.ofFloat;
 
 public class PreviewActivity extends AppCompatActivity {
 
-    private MyViewPager vpImage;
+    private MyViewPager myViewPager;
     private TextView tvIndicator;
     private TextView tvConfirm;
     private FrameLayout btnConfirm;
@@ -46,8 +45,8 @@ public class PreviewActivity extends AppCompatActivity {
     //tempImages和tempSelectImages用于图片列表数据的页面传输。
     //之所以不要Intent传输这两个图片列表，因为要保证两位页面操作的是同一个列表数据，同时可以避免数据量大时，
     // 用Intent传输发生的错误问题。
-//    private static ArrayList<Image> tempImages;
-//    private static ArrayList<Image> tempSelectImages;
+    private static ArrayList<Image> tempImages;
+    private static ArrayList<Image> tempSelectImages;
 
     private ArrayList<Image> mImages = new ArrayList<>();
     private ArrayList<Image> mSelectImages = new ArrayList<>();
@@ -62,15 +61,16 @@ public class PreviewActivity extends AppCompatActivity {
     public static void openActivity(Activity activity, ArrayList<Image> images,
                                     ArrayList<Image> selectImages, boolean isSingle,
                                     int maxSelectCount, int position) {
-//        tempImages = images;
-//        tempSelectImages = selectImages;
+        tempImages = images;
+        tempSelectImages = selectImages;
         Intent intent = new Intent(activity, PreviewActivity.class);
         intent.putExtra(ImageSelector.MAX_SELECT_COUNT, maxSelectCount);
         intent.putExtra(ImageSelector.IS_SINGLE, isSingle);
         intent.putExtra(ImageSelector.POSITION, position);
 
-        intent.putParcelableArrayListExtra("images" , images);
-        intent.putParcelableArrayListExtra("selectImages" , selectImages);
+        //这个方法，在内存不足，或数量过大时，会引起android.os.TransactionTooLargeException: data parcel size 2851820* bytes异常
+//        intent.putParcelableArrayListExtra("images" , images);
+//        intent.putParcelableArrayListExtra("selectImages" , selectImages);
 
         activity.startActivityForResult(intent, ImageSelector.RESULT_CODE);
     }
@@ -98,8 +98,34 @@ public class PreviewActivity extends AppCompatActivity {
 
         mImages.clear();
         mSelectImages.clear();
+        if (null != tempImages && !tempImages.isEmpty()){
+            mImages.addAll(tempImages);
+            mSelectImages.addAll(tempSelectImages);
+        }
+        //如果图片没有包括 所有选择的图片，则需要将未包括选择的图片添加到图片列表前面，这是因为切换文件夹，再来预览，才会出现这个问题
+        int selectedSize = mSelectImages.size();
+        List<Image> unContainList = new ArrayList<>();
+        for (int i = 0; i < selectedSize; i++) {
+            Image image = mSelectImages.get(i);
+            if (!mImages.contains(image)){
+                unContainList.add(image);
+            }
+        }
+        //重新定义position
+        int position = intent.getIntExtra(ImageSelector.POSITION, 0);
+        //未包括的图片数量
+        int unContainSize = unContainList.size();
+        if (unContainSize > 0){
+            mImages.addAll(0 , unContainList);
+            position = position + unContainSize;
+            int imageSize = mImages.size();
+            position = position >= imageSize ?  (imageSize - 1) : position;
+            position = position < 0 ? 0 : position;
+        }
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        //这个方法不能再用了，如果图片列表过大，则会引起android.os.TransactionTooLargeException: data parcel size 2851820* bytes异常
+        //所以不能用intent.putParcelableArrayListExtra()方法来传递大的图片列表。
+/*        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
             ArrayList<Image> images = intent.getParcelableArrayListExtra("images" , Image.class);
             ArrayList<Image> selectImages = intent.getParcelableArrayListExtra("selectImages" , Image.class);
             if (null != images){
@@ -117,7 +143,7 @@ public class PreviewActivity extends AppCompatActivity {
             if (null != selectImages){
                 mSelectImages.addAll(selectImages);
             }
-        }
+        }*/
 
         if (mImages.isEmpty()){
             finish();
@@ -143,11 +169,11 @@ public class PreviewActivity extends AppCompatActivity {
 
         tvIndicator.setText(1 + "/" + mImages.size());
         changeSelect(mImages.get(0));
-        vpImage.setCurrentItem(intent.getIntExtra(ImageSelector.POSITION, 0));
+        myViewPager.setCurrentItem(position);
     }
 
     private void initView() {
-        vpImage = findViewById(R.id.vp_image);
+        myViewPager = findViewById(R.id.myImagePickerViewPager);
         tvIndicator = findViewById(R.id.tv_indicator);
         tvConfirm = findViewById(R.id.tv_confirm);
         btnConfirm = findViewById(R.id.btn_confirm);
@@ -187,7 +213,7 @@ public class PreviewActivity extends AppCompatActivity {
      */
     private void initViewPager() {
         ImagePagerAdapter adapter = new ImagePagerAdapter(this, mImages);
-        vpImage.setAdapter(adapter);
+        myViewPager.setAdapter(adapter);
         adapter.setOnItemClickListener(new ImagePagerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position, Image image) {
@@ -198,7 +224,7 @@ public class PreviewActivity extends AppCompatActivity {
                 }
             }
         });
-        vpImage.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        myViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -317,7 +343,7 @@ public class PreviewActivity extends AppCompatActivity {
     }
 
     private void clickSelect() {
-        int position = vpImage.getCurrentItem();
+        int position = myViewPager.getCurrentItem();
         if (mImages != null && mImages.size() > position) {
             Image image = mImages.get(position);
             if (mSelectImages.contains(image)) {

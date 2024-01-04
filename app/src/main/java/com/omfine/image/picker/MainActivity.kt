@@ -2,6 +2,7 @@ package com.omfine.image.picker
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -84,6 +85,23 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (null == data){
+            return
+        }
+        val list = data.getStringArrayListExtra(ImageSelector.SELECT_RESULT)
+        if (list.isNullOrEmpty()){
+            return
+        }
+        val imagePath = list[0]
+        Log.e("http_message", "========图片处理=====图片最终地址=====imagePath:: $imagePath")
+
+        val b = BitmapFactory.decodeFile(imagePath)
+        if (null != b){
+            Log.e("http_message", "========图片处理=====b:: ${b.byteCount}  w: ${b.width}  h: ${b.height}")
+        }
+
+
+
     }
 
     override fun onRequestPermissionsResult(

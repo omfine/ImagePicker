@@ -151,14 +151,26 @@ public class ImageUtil {
             final BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             if (VersionUtils.isAndroidQ()) {
-                BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+                getBitmapFromUri(context, uri, options);
+                if (options.outWidth < 10 || options.outHeight < 10){
+                    BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+                    if (options.outWidth < 10 || options.outHeight < 10){
+                        BitmapFactory.decodeFile(pathName, options);
+                    }
+                }
             } else {
                 BitmapFactory.decodeFile(pathName, options);
+                if (options.outWidth < 10 || options.outHeight < 10){
+                    getBitmapFromUri(context, uri, options);
+                    if (options.outWidth < 10 || options.outHeight < 10){
+                        BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+                    }
+                }
             }
             // 调用上面定义的方法计算inSampleSize值
             options.inSampleSize = calculateInSampleSize(options, reqWidth,
                     reqHeight);
-
+            Log.e("http_message" , "======inSampleSize: " + options.inSampleSize);
             // 使用获取到的inSampleSize值再次解析图片
             options.inJustDecodeBounds = false;
 //            options.inPreferredConfig = Bitmap.Config.RGB_565;

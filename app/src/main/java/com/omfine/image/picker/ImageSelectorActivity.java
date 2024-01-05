@@ -17,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import androidx.activity.result.ActivityResultLauncher;
@@ -39,8 +40,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.omfine.image.picker.adapter.FolderAdapter;
 import com.omfine.image.picker.adapter.ImageAdapter;
 import com.omfine.image.picker.entry.Folder;
@@ -53,10 +52,8 @@ import com.omfine.image.picker.utils.ImageUtil;
 import com.omfine.image.picker.utils.UriUtils;
 import com.omfine.image.picker.utils.VersionUtils;
 import com.omfine.image.picker.view.OnDialogBtnClickListener;
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -503,6 +500,23 @@ public class ImageSelectorActivity extends AppCompatActivity {
         }else {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU){
                 ArrayList<Image> selectImages = data.getParcelableArrayListExtra("selectImages" , Image.class);
+                Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=0=selectImages: " + (null == selectImages ? "为空" : ("数量: " + selectImages.size())));
+                if (null == selectImages || selectImages.isEmpty()){
+                    selectImages = data.getParcelableArrayListExtra("selectImages");
+                    Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=1=selectImages: " + (null == selectImages ? "为空" : ("数量: " + selectImages.size())));
+                }
+                if (null == selectImages || selectImages.isEmpty()){
+                    selectImages = data.getParcelableExtra("selectImages");
+                    Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=2=selectImages: " + (null == selectImages ? "为空" : ("数量: " + selectImages.size())));
+                }
+                if (null == selectImages || selectImages.isEmpty()){
+                    Object obj = data.getSerializableExtra("selectImages");
+                    if (null != obj){
+                        selectImages = (ArrayList<Image>)obj;
+                    }
+                    Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=3=selectImages: " + (null == selectImages ? "为空" : ("数量: " + selectImages.size())));
+                }
+
                 if (null != selectImages){
                     for (Image image : selectImages) {
                         images.add(image.getPath());
@@ -510,6 +524,23 @@ public class ImageSelectorActivity extends AppCompatActivity {
                 }
             }else {
                 ArrayList<Image> selectImages = data.getParcelableExtra("selectImages");
+                Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=4=selectImages: " + (null == selectImages ? "为空" : ("数量: " + selectImages.size())));
+                if (null == selectImages || selectImages.isEmpty()){
+                    selectImages = data.getParcelableArrayListExtra("selectImages");
+                    Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=66=selectImages: " + (null == selectImages ? "为空" : ("数量: " + selectImages.size())));
+                }
+                try {
+                    if (null == selectImages || selectImages.isEmpty()){
+                        Object obj = data.getSerializableExtra("selectImages");
+                        if (null != obj){
+                            selectImages = (ArrayList<Image>)obj;
+                        }
+                        Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=5=selectImages: " + (null == selectImages ? "为空" : ("数量: " + selectImages.size())));
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 if (null != selectImages){
                     for (Image image : selectImages) {
                         images.add(image.getPath());
@@ -533,6 +564,9 @@ public class ImageSelectorActivity extends AppCompatActivity {
         intent.putStringArrayListExtra(ImageSelector.SELECT_RESULT, images);
         intent.putExtra(ImageSelector.IS_CAMERA_IMAGE, isCameraImage);
         setResult(RESULT_OK, intent);
+
+        Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=10=selectImages: " + (null == images ? "为空" : ("数量: " + images.size())));
+
     }
 
     private void toPreviewActivity(ArrayList<Image> images, int position) {
@@ -580,6 +614,19 @@ public class ImageSelectorActivity extends AppCompatActivity {
                         }
                     }else {
                         ArrayList<Image> selectImages = data.getParcelableExtra("selectImages");
+                        if (null == selectImages || selectImages.isEmpty()){
+                            selectImages = data.getParcelableArrayListExtra("selectImages");
+                        }
+                        try {
+                            if (null == selectImages || selectImages.isEmpty()){
+                                Object obj = data.getSerializableExtra("selectImages");
+                                if (null != obj){
+                                    selectImages = (ArrayList<Image>) obj;
+                                }
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                         if (null != selectImages){
                             images.addAll(selectImages);
                         }

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -88,22 +89,41 @@ public class ClipImageActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (data != null && requestCode == mRequestCode) {
+        if (null == data){
+            finish();
+            return;
+        }
+        if (requestCode != mRequestCode){
+            finish();
+            return;
+        }
+        try {
             ArrayList<String> images = data.getStringArrayListExtra(ImageSelector.SELECT_RESULT);
+            Log.e("http_message" , "http_message======裁剪的图片数量=====： " + (null == images ? "为空值" : images.size()));
+            if (null == images || images.isEmpty()){
+                finish();
+                return;
+            }
             isCameraImage = data.getBooleanExtra(ImageSelector.IS_CAMERA_IMAGE, false);
             Bitmap bitmap = ImageUtil.decodeSampledBitmapFromFile(this, images.get(0), 720, 1080);
-            if (bitmap != null) {
-                imageView.setBitmapData(bitmap);
-            } else {
+            if (null == bitmap){
                 finish();
+                return;
             }
-        } else {
+            imageView.setBitmapData(bitmap);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e("http_message" , "http_message======裁剪页面Exception=====： " + e.getLocalizedMessage());
             finish();
         }
     }
 
     private void confirm(Bitmap bitmap) {
+/*        try{
+            Log.e("http_message" , "http_message======裁剪页面确认返回数据bitmap大小=====： " + (null == bitmap ? "图片为空" : (" W: " + bitmap.getWidth()  + "  H: " + bitmap.getHeight())));
+        }catch (Exception e){
+            e.printStackTrace();
+        }*/
         String imagePath = null;
         if (bitmap != null) {
             String name = DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.getDefault())).toString();

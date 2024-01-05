@@ -70,9 +70,8 @@ class MainActivity : AppCompatActivity() {
     private fun a(){
         ImageSelector.builder()
             .useCamera(true) //设置是否使用拍照
-//            .setSingle(false) //设置是否单选
-            .setMaxSelectCount(5)
-            .setCrop(false) //裁切
+            .setSingle(true) //设置是否单选
+            .setCrop(true) //裁切
             .canPreview(true) //是否点击放大图片查看,，默认为true
             .start(this, 20) // 打开相
     }

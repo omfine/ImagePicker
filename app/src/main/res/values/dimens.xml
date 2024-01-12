@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- Your custom size defind by references, can be writted in anywhere, any module, any values/*.xml, for example: -->
+    <!-- dp and sp values, must be defind in this file! -->
+    <!-- view size,you can add if there is no one -->
+    <dimen name="image_picker_permission_tip_view_margin_top">16dp</dimen>
+    <dimen name="image_picker_permission_tip_view_margin_start">16dp</dimen>
+    <dimen name="image_picker_permission_tip_view_margin_end">16dp</dimen>
+
+    <dimen name="image_picker_permission_tip_view_padding_top">12dp</dimen>
+    <dimen name="image_picker_permission_tip_view_padding_bottom">12dp</dimen>
+    <dimen name="image_picker_permission_tip_view_padding_start">12dp</dimen>
+    <dimen name="image_picker_permission_tip_view_padding_end">12dp</dimen>
+
+    <dimen name="image_picker_permission_tip_view_title_textSize">18sp</dimen>
+    <dimen name="image_picker_permission_tip_view_content_textSize">14sp</dimen>
+
+    <dimen name="image_picker_permission_tip_view_content_margin_top">8dp</dimen>
+
+</resources>

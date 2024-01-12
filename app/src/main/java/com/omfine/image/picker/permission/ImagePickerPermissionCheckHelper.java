@@ -2,13 +2,40 @@ package com.omfine.image.picker.permission;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-
 import androidx.core.content.ContextCompat;
-
+/**
+ * 权限检查。
+ * @author E
+ */
 public class ImagePickerPermissionCheckHelper {
 
+
+    /**
+     * 查看是否有某个功能需要的权限。
+     * @param albumPermission 相册，否则相机
+     * @param onImagePickerPermissionRequestListener 回调
+     */
+    public static void checkPermissions(Context context , boolean albumPermission , OnImagePickerPermissionRequestListener onImagePickerPermissionRequestListener){
+        //前置检查,确实需要再下一步
+        if (albumPermission){
+            //相册
+            if (hasAlbumNeededPermission(context)){
+                onImagePickerPermissionRequestListener.onGranted();
+                return;
+            }
+        }else {
+            //相机
+            if (hasCameraNeededPermission(context)){
+                onImagePickerPermissionRequestListener.onGranted();
+                return;
+            }
+        }
+        ImagePickerPermissionConfig.getInstance().setOnImagePickerPermissionRequestListener(onImagePickerPermissionRequestListener);
+        context.startActivity(new Intent(context , ImagePickerPermissionActivity.class).putExtra("from" , (albumPermission ? 0 : 1) ));
+    }
 
     /**
      * 相册需要的权限

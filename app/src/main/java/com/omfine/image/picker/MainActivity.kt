@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.omfine.image.picker.permission.ImagePickerPermissionActivity
+import com.omfine.image.picker.permission.ImagePickerPermissionCheckHelper
 import com.omfine.image.picker.permission.ImagePickerPermissionConfig
 import com.omfine.image.picker.permission.OnImagePickerPermissionRequestListener
 import com.omfine.image.picker.utils.ImageSelector
@@ -58,7 +59,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestPermission(albumPermission: Boolean){
-        ImagePickerPermissionConfig.getInstance().onImagePickerPermissionRequestListener = object : OnImagePickerPermissionRequestListener(){
+        ImagePickerPermissionCheckHelper.checkPermissions(this , albumPermission , object : OnImagePickerPermissionRequestListener(){
             override fun onDenied() {
                 //权限onDenied
                 Log.e("http_message", "http_message=========权限结果返回====拒绝=====")
@@ -67,8 +68,7 @@ class MainActivity : AppCompatActivity() {
                 //权限onGranted
                 Log.e("http_message", "http_message=========权限结果返回====同意=====")
             }
-        }
-        startActivity(Intent(this , ImagePickerPermissionActivity::class.java).putExtra("from" , if (albumPermission) 0 else 1 ))
+        })
     }
 
     private fun a(){

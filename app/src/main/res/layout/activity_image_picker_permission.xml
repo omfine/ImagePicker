@@ -12,26 +12,26 @@
         android:alpha="0.3"
         />
 
-
     <LinearLayout
         android:id="@+id/imagePickerPermissionApplyTipView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="@dimen/image_picker_permission_tip_view_margin_start"
+        android:layout_marginEnd="@dimen/image_picker_permission_tip_view_margin_end"
+        android:layout_marginTop="@dimen/image_picker_permission_tip_view_margin_top"
         android:background="@drawable/permission_describe_item_bg"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
+        android:paddingTop="@dimen/image_picker_permission_tip_view_padding_top"
+        android:paddingBottom="@dimen/image_picker_permission_tip_view_padding_bottom"
+        android:paddingStart="@dimen/image_picker_permission_tip_view_padding_start"
+        android:paddingEnd="@dimen/image_picker_permission_tip_view_padding_end"
         >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/image_picker_permission_apply_tip_title"
-            android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textColor="@color/image_picker_permission_tip_view_title_textColor"
+            android:textSize="@dimen/image_picker_permission_tip_view_title_textSize"
             android:textStyle="bold"
             />
 
@@ -39,11 +39,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/image_picker_permission_apply_tip_content"
-            android:textColor="#616266"
-            android:textSize="14sp"
+            android:textColor="@color/image_picker_permission_tip_view_content_textColor"
+            android:textSize="@dimen/image_picker_permission_tip_view_content_textSize"
             android:lineSpacingExtra="1dp"
             android:lineSpacingMultiplier="1.1"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/image_picker_permission_tip_view_content_margin_top"
             />
     </LinearLayout>
 

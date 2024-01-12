@@ -15,6 +15,8 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.omfine.image.picker.entry.RequestConfig;
+import com.omfine.image.picker.listener.OnImagePickerResultListener;
+import com.omfine.image.picker.utils.ImagePickerTempConfig;
 import com.omfine.image.picker.utils.ImageSelector;
 import com.omfine.image.picker.utils.ImageUtil;
 import com.omfine.image.picker.utils.StringUtils;
@@ -119,22 +121,20 @@ public class ClipImageActivity extends Activity {
     }
 
     private void confirm(Bitmap bitmap) {
-/*        try{
+        try{
             Log.e("http_message" , "http_message======裁剪页面确认返回数据bitmap大小=====： " + (null == bitmap ? "图片为空" : (" W: " + bitmap.getWidth()  + "  H: " + bitmap.getHeight())));
         }catch (Exception e){
             e.printStackTrace();
-        }*/
+        }
         String imagePath = null;
         if (bitmap != null) {
-            String name = DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.getDefault())).toString();
-            String path = ImageUtil.getImageCacheDir(this);
-            imagePath = ImageUtil.saveImage(bitmap, path, name);
+            imagePath = ImageUtil.saveImage(this ,bitmap);
             bitmap.recycle();
-            bitmap = null;
         }
 
+        ArrayList<String> selectImages = new ArrayList<>();
+
         if (StringUtils.isNotEmptyString(imagePath)) {
-            ArrayList<String> selectImages = new ArrayList<>();
             selectImages.add(imagePath);
             Intent intent = new Intent();
             intent.putStringArrayListExtra(ImageSelector.SELECT_RESULT, selectImages);
@@ -142,7 +142,23 @@ public class ClipImageActivity extends Activity {
             setResult(RESULT_OK, intent);
         }
         finish();
+
+        //裁剪完成，直接回调
+        onImageResult(selectImages);
     }
+
+    /**
+     * 通过监听来回调数据
+     * @param images
+     */
+    private void onImageResult(ArrayList<String> images){
+        OnImagePickerResultListener onImagePickerResultListener = ImagePickerTempConfig.getInstance().getOnImagePickerResultListener();
+        if (null == onImagePickerResultListener){
+            return;
+        }
+        onImagePickerResultListener.onResult(images);
+    }
+
 
     /**
      * 启动图片选择器

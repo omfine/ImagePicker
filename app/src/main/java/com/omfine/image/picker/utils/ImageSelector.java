@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import com.omfine.image.picker.ClipImageActivity;
 import com.omfine.image.picker.ImageSelectorActivity;
 import com.omfine.image.picker.entry.RequestConfig;
+import com.omfine.image.picker.listener.OnImagePickerResultListener;
 import com.omfine.image.picker.model.ImageModel;
 import com.omfine.image.picker.permission.ImagePickerPermissionCheckHelper;
 import com.omfine.image.picker.permission.OnImagePickerPermissionRequestListener;
@@ -221,6 +222,53 @@ public class ImageSelector {
         }
 
 
+        /**
+         * 打开相册
+         * 在这一步，加上权限检测步骤
+         * @param activity
+         * @param requestCode
+         */
+        public void start(Activity activity, int requestCode , OnImagePickerResultListener onImagePickerResultListener) {
+            config.requestCode = requestCode;
+            // 仅拍照，useCamera必须为true
+            if (config.onlyTakePhoto) {
+                config.useCamera = true;
+            }
+            //提前加权限检测
+            ImagePickerPermissionCheckHelper.checkPermissions(activity , !config.onlyTakePhoto , new OnImagePickerPermissionRequestListener(){
+                @Override
+                public void onDenied() {
+                    //权限拒绝
+                    Log.e("http_message" , "http_message========ImageSelector=权限拒绝===========: " + (config.onlyTakePhoto ? "相机" : "相册"));
+                    if (null != onImagePickerResultListener){
+                        onImagePickerResultListener.onPermissionDenied();
+                    }
+                }
+                @Override
+                public void onGranted() {
+                    //有权限
+                    Log.e("http_message" , "http_message========ImageSelector=有权限===下一步========: " + (config.onlyTakePhoto ? "相机" : "相册"));
+                    ImagePickerTempConfig.getInstance().setOnImagePickerResultListener(onImagePickerResultListener);
+
+                    if (config.isCrop) {
+                        ClipImageActivity.openActivity(activity, requestCode, config);
+                    } else {
+                        ImageSelectorActivity.openActivity(activity, requestCode, config);
+                    }
+
+                }
+            });
+
+        }
+
+        /**
+         * 打开相册或相机
+         * @param activity activity
+         * @param onImagePickerResultListener 图片回调
+         */
+        public void start(Activity activity , OnImagePickerResultListener onImagePickerResultListener){
+            start(activity , 5060 , onImagePickerResultListener);
+        }
 
         /**
          * 打开相册

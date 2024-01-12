@@ -45,8 +45,10 @@ import com.omfine.image.picker.adapter.ImageAdapter;
 import com.omfine.image.picker.entry.Folder;
 import com.omfine.image.picker.entry.Image;
 import com.omfine.image.picker.entry.RequestConfig;
+import com.omfine.image.picker.listener.OnImagePickerResultListener;
 import com.omfine.image.picker.model.ImageModel;
 import com.omfine.image.picker.utils.DateUtils;
+import com.omfine.image.picker.utils.ImagePickerTempConfig;
 import com.omfine.image.picker.utils.ImageSelector;
 import com.omfine.image.picker.utils.ImageUtil;
 import com.omfine.image.picker.utils.UriUtils;
@@ -95,6 +97,10 @@ public class ImageSelectorActivity extends AppCompatActivity {
 
     private boolean useCamera = true;
     private boolean onlyTakePhoto = false;
+    /**
+     * 是否需要裁剪。
+     */
+    private boolean isCrop = false;
 
     private Handler mHideHandler = new Handler();
     private Runnable mHide = new Runnable() {
@@ -201,6 +207,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
         canPreview = config.canPreview;
         useCamera = config.useCamera;
         mSelectedImages = config.selected;
+        this.isCrop = config.isCrop;
         onlyTakePhoto = config.onlyTakePhoto;
         if (onlyTakePhoto) {
             // 仅拍照
@@ -557,6 +564,12 @@ public class ImageSelectorActivity extends AppCompatActivity {
         //点击确定，把选中的图片通过Intent传给上一个Activity。
         setResult(images, isCameraImage);
         finish();
+        if (isCrop){
+            return;
+        }
+        Log.e("http_message" , "http_message=========不需要裁剪，直接返回========数量: " + images.size());
+        //如果不需要裁剪，直接返回
+        onImageResult(images);
     }
 
     private void setResult(ArrayList<String> images, boolean isCameraImage) {
@@ -565,8 +578,19 @@ public class ImageSelectorActivity extends AppCompatActivity {
         intent.putExtra(ImageSelector.IS_CAMERA_IMAGE, isCameraImage);
         setResult(RESULT_OK, intent);
 
-        Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=10=selectImages: " + (null == images ? "为空" : ("数量: " + images.size())));
+        Log.e("http_message" , "http_message=======ImageSelectorActivity==confirm=10=selectImages: " + (null == images ? "为空" : ("数量: " + images.size())) + "  是否需要裁剪: "  + this.isCrop);
+    }
 
+    /**
+     * 通过监听来回调数据
+     * @param images
+     */
+    private void onImageResult(ArrayList<String> images){
+        OnImagePickerResultListener onImagePickerResultListener = ImagePickerTempConfig.getInstance().getOnImagePickerResultListener();
+        if (null == onImagePickerResultListener){
+            return;
+        }
+        onImagePickerResultListener.onResult(images);
     }
 
     private void toPreviewActivity(ArrayList<Image> images, int position) {

@@ -10,11 +10,13 @@ import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.omfine.image.picker.listener.OnImagePickerResultListener
 import com.omfine.image.picker.permission.ImagePickerPermissionActivity
 import com.omfine.image.picker.permission.ImagePickerPermissionCheckHelper
 import com.omfine.image.picker.permission.ImagePickerPermissionConfig
 import com.omfine.image.picker.permission.OnImagePickerPermissionRequestListener
 import com.omfine.image.picker.utils.ImageSelector
+import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -74,17 +76,31 @@ class MainActivity : AppCompatActivity() {
     private fun a(){
         ImageSelector.builder()
             .useCamera(true) //设置是否使用拍照
-            .setSingle(true) //设置是否单选
-            .setCrop(true) //裁切
+//            .setSingle(true) //设置是否单选
+            .setCrop(false) //裁切
             .canPreview(true) //是否点击放大图片查看,，默认为true
-            .start(this, 20) // 打开相
+            .start(this , object : OnImagePickerResultListener(){
+                override fun onPermissionDenied() {
+                    Log.e("http_message", "========图片处理=====返回结果===监听回调=====权限被拒绝===========")
+                }
+                override fun onResult(images: ArrayList<String>?) {
+                    Log.e("http_message", "========图片处理=====返回结果=====监听回调=======:: ${images?.size}")
+                }
+            }) // 打开相
     }
 
     private fun b(){
         ImageSelector.builder()
             .onlyTakePhoto(true) // 仅拍照，不打开相册
             .setCrop(true)
-            .start(this, 20)
+            .start(this , object : OnImagePickerResultListener(){
+                override fun onPermissionDenied() {
+                    Log.e("http_message", "========图片处理=====返回结果===监听回调=====权限被拒绝===========")
+                }
+                override fun onResult(images: ArrayList<String>?) {
+                    Log.e("http_message", "========图片处理=====返回结果=====监听回调=======:: ${images?.size}")
+                }
+            })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -96,17 +112,15 @@ class MainActivity : AppCompatActivity() {
         if (list.isNullOrEmpty()){
             return
         }
-        Log.e("http_message", "========图片处理=====图片数量===:: ${list.size}")
+        Log.e("http_message", "========图片处理=====图片数量==onActivityResult=:: ${list.size}")
 
         val imagePath = list[0]
-        Log.e("http_message", "========图片处理=====图片最终地址=====imagePath:: $imagePath")
+        Log.e("http_message", "========图片处理=====图片最终地址==onActivityResult===imagePath:: $imagePath")
 
         val b = BitmapFactory.decodeFile(imagePath)
         if (null != b){
-            Log.e("http_message", "========图片处理=====b:: ${b.byteCount}  w: ${b.width}  h: ${b.height}")
+            Log.e("http_message", "========图片处理==onActivityResult===b:: ${b.byteCount}  w: ${b.width}  h: ${b.height}")
         }
-
-
 
     }
 

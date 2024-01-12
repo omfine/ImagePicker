@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.text.format.DateFormat;
 import android.util.Log;
 
 import java.io.File;
@@ -20,6 +21,8 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class ImageUtil {
 
@@ -45,6 +48,44 @@ public class ImageUtil {
         }
         return file.getPath() + File.separator + "image_select";
     }
+
+    /**
+     * 图片压缩后返回图片地址
+     * @return
+     */
+    public static String compressImage(Context context , String imagePath , int reqWidth , int reqHeight){
+        try{
+            Bitmap bitmap = decodeSampledBitmapFromFile(context , imagePath , reqWidth , reqHeight);
+            if (null == bitmap){
+                return imagePath;
+            }
+            return saveImage(context , bitmap);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return imagePath;
+    }
+
+
+    /**
+     * 保存图片，并返回存储地址。
+     * @param bitmap 要存储的图像。
+     * @return
+     */
+    public static String saveImage(Context context , Bitmap bitmap){
+        if (null == bitmap){
+            return "";
+        }
+        try {
+            String name = DateFormat.format("yyyyMMdd_hhmmss", Calendar.getInstance(Locale.getDefault())).toString();
+            String path = ImageUtil.getImageCacheDir(context);
+            return saveImage(bitmap, path, name);
+        }catch (Exception e){
+            e.printStackTrace();
+            return "";
+        }
+    }
+
 
     /**
      * 保存图片

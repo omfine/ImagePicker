@@ -2,11 +2,6 @@ package com.omfine.image.picker.utils;
 
 import android.os.Build;
 
-/**
- * @Author teach-梁任彦
- * @Description
- * @Date 2019-09-11
- */
 public class VersionUtils {
 
     /**

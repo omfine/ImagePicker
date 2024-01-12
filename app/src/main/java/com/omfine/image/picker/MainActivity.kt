@@ -10,8 +10,9 @@ import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.omfine.image.picker.permission.ImagePickerPermissionActivity
+import com.omfine.image.picker.permission.ImagePickerPermissionConfig
+import com.omfine.image.picker.permission.OnImagePickerPermissionRequestListener
 import com.omfine.image.picker.utils.ImageSelector
 
 class MainActivity : AppCompatActivity() {
@@ -36,25 +37,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.permissionBtn).setOnClickListener {
-
-            if (Build.VERSION.SDK_INT >= 33 && applicationInfo.targetSdkVersion >= 33){
-                requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
-            }else{
-
-                ActivityCompat.requestPermissions(this , arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE) , 200)
-            }
-
-
-        }
-
         listeners()
     }
 
     private fun listeners(){
-        findViewById<Button>(R.id.permissionBtn).setOnClickListener {
-            requestPermission()
+        findViewById<Button>(R.id.albumPermissionBtn).setOnClickListener {
+            requestPermission(true)
         }
+        findViewById<Button>(R.id.cameraPermissionBtn).setOnClickListener {
+            requestPermission(false)
+        }
+
         findViewById<Button>(R.id.openAlbumBtn).setOnClickListener {
             a()
         }
@@ -64,8 +57,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun requestPermission(){
-        startActivity(Intent(this , ImagePickerPermissionActivity::class.java))
+    private fun requestPermission(albumPermission: Boolean){
+        ImagePickerPermissionConfig.getInstance().onImagePickerPermissionRequestListener = object : OnImagePickerPermissionRequestListener(){
+            override fun onDenied() {
+                //权限onDenied
+                Log.e("http_message", "http_message=========权限结果返回====拒绝=====")
+            }
+            override fun onGranted() {
+                //权限onGranted
+                Log.e("http_message", "http_message=========权限结果返回====同意=====")
+            }
+        }
+        startActivity(Intent(this , ImagePickerPermissionActivity::class.java).putExtra("from" , if (albumPermission) 0 else 1 ))
     }
 
     private fun a(){

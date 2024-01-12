@@ -870,7 +870,7 @@ public class ImageSelectorActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setCancelable(false)
                 .setTitle(R.string.selector_hint)
-                .setMessage(onlyTakePhoto ? R.string.selector_permissions_denied_hint_for_camera : R.string.selector_permissions_denied_hint_for_album)
+                .setMessage(onlyTakePhoto ? R.string.image_picker_permissions_denied_hint_for_camera : R.string.image_picker_permissions_denied_hint_for_album)
                 .setNegativeButton(R.string.selector_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

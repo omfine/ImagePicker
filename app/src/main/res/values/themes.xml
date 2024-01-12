@@ -13,4 +13,10 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="transparentActivity" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

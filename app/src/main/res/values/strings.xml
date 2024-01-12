@@ -16,10 +16,19 @@
     <string name="selector_hint">提示</string>
     <string name="selector_permissions_hint">该相册需要赋予访问存储和拍照的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
 
-    <string name="selector_permissions_denied_hint_for_album">该功能需要赋予访问相册的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
-    <string name="selector_permissions_denied_hint_for_camera">该功能需要赋予访问相机的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
+    <string name="image_picker_permissions_dialog_title">提示</string>
+    <string name="image_picker_permissions_dialog_btn_confirm">确定</string>
+    <string name="image_picker_permissions_dialog_btn_cancel">取消</string>
+
+    <string name="image_picker_permissions_denied_hint_for_album">该功能需要赋予访问相册的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
+    <string name="image_picker_permissions_denied_hint_for_camera">该功能需要赋予访问相机的权限，请到“设置”>“应用”>“权限”中配置权限。</string>
 
     <string name="selector_permission_request_tip_album">访问相册需要相关权限,请允许打开相关权限</string>
     <string name="selector_permission_request_tip_camera">访问相机需要相关权限,请允许打开相关权限</string>
+
+
+    <string name="image_picker_permission_apply_tip_title">权限申请说明</string>
+    <string name="image_picker_permission_apply_tip_content">QQ音乐请求存储权限用于以下功能:1.设备本地歌曲扫描展示和播放:2.图片、音视频内容上传和下载保存(如头像图片上传、歌词高光视频分享保存等)。</string>
+
 
 </resources>

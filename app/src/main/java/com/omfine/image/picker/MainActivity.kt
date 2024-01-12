@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.omfine.image.picker.permission.ImagePickerPermissionActivity
 import com.omfine.image.picker.utils.ImageSelector
 
 class MainActivity : AppCompatActivity() {
@@ -51,9 +52,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun listeners(){
-/*        findViewById<Button>(R.id.permissionBtn).setOnClickListener {
+        findViewById<Button>(R.id.permissionBtn).setOnClickListener {
             requestPermission()
-        }*/
+        }
         findViewById<Button>(R.id.openAlbumBtn).setOnClickListener {
             a()
         }
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestPermission(){
-
+        startActivity(Intent(this , ImagePickerPermissionActivity::class.java))
     }
 
     private fun a(){
